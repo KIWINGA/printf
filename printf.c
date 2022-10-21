@@ -61,7 +61,7 @@ int _printf(const char *format, ...)
 		else
 		{
 
-			if (format[i + 1] == '%');
+			if (format[i + 1] == '%')
 			{
 				_putchar('%');
 				counter++;
