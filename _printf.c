@@ -1,21 +1,22 @@
 #include "main.h"
-#include <stdarg.h>
+#include <stdlib.h>
 
 /**
- * check_format - checls format specifier
- * @formatL format specifier
- * Return: pointer to a function
+ * check_for_specifiers - checks if there is a valid format specifier
+ * @format: possible format specifier
+ *
+ * Return: pointer to valid function or NULL
  */
-int (*check_format(const char *format))(va_list)
+static int (*check_for_specifiers(const char *format))(va_list)
 {
-	int i = 0;
+	unsigned int i;
 	print_t p[] = {
 		{"c", print_c},
 		{"s", print_s},
 		{"i", print_i},
 		{"d", print_d},
-		{"b", print_b},
 		{"u", print_u},
+		{"b", print_b},
 		{"o", print_o},
 		{"x", print_x},
 		{"X", print_X},
@@ -26,60 +27,56 @@ int (*check_format(const char *format))(va_list)
 		{NULL, NULL}
 	};
 
-	for (; p[i].t != NULL; i++)
+	for (i = 0; p[i].t != NULL; i++)
 	{
 		if (*(p[i].t) == *format)
+		{
 			break;
+		}
 	}
 	return (p[i].f);
 }
+
 /**
- *_printf - function that format prints
- *@format: list of arguments
- *Return: number of characters
+ * _printf - prints anything
+ * @format: list of argument types passed to the function
+ *
+ * Return: number of characters printed
  */
 int _printf(const char *format, ...)
 {
-	va_list ap;
+	unsigned int i = 0, count = 0;
+	va_list valist;
 	int (*f)(va_list);
-	unsigned int i = 0, counter = 0;
 
 	if (format == NULL)
-	{
 		return (-1);
-	}
-	va_start(ap, format);
-	while (format && format[i])
+	va_start(valist, format);
+	while (format[i])
 	{
-		if (format[i] != '%')
+		for (; format[i] != '%' && format[i]; i++)
 		{
 			_putchar(format[i]);
-			counter++;
-			i++;
+			count++;
+		}
+		if (!format[i])
+			return (count);
+		f = check_for_specifiers(&format[i + 1]);
+		if (f != NULL)
+		{
+			count += f(valist);
+			i += 2;
 			continue;
 		}
+		if (!format[i + 1])
+			return (-1);
+		_putchar(format[i]);
+		count++;
+		if (format[i + 1] == '%')
+			i += 2;
 		else
-		{
-
-			if (format[i + 1] == '%')
-			{
-				_putchar('%');
-				counter++;
-				i += 2;
-				continue;
-			}
-			else
-			{
-				f = check_format(&format[i + 1]);
-				if (f == NULL)
-					return (-1);
-				i += 2;
-				counter += f(ap);
-				continue;
-			}
-		}
-		i++;
+			i++;
 	}
-	va_end(ap);
-	return (counter);
+	va_end(valist);
+	return (count);
 }
