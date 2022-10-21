@@ -26,12 +26,12 @@ int (*check_format(const char *format))(va_list)
 		{NULL, NULL}
 	};
 
-	for (; p[i].t != NULL, i++)
+	for (; p[i].t != NULL; i++)
 	{
 		if (*(p[i].t) == *format)
 			break;
 	}
-	retrun (p[i].f);
+	return (p[i].f);
 }
 /**
  *_printf - function that format prints
@@ -46,7 +46,7 @@ int _printf(const char *format, ...)
 
 	if (format == NULL)
 	{
-		return (-1)
+		return (-1);
 	}
 	va_start(ap, format);
 	while (format && format[i])
